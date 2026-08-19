@@ -1,0 +1,8 @@
+# dsh-term bundle patch: inserts the dual-face plugin row into the web
+# profile roster. The node half (exports ".") runs in the host process
+# (node-pty PTY sessions + /dsh-term/* routes), and the `dsh.client`
+# declaration in package.json makes the browser half (exports "./client",
+# served at /plugins/ui-dsh-term/client.js) load in the web GUI.
+- insert:
+    - id: ui-dsh-term
+      name: '@lijian-ui/dsh-term'
