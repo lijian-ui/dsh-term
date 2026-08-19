@@ -1,1 +1,1 @@
-{"version":3,"file":"AnimatedDock.d.ts","sourceRoot":"","sources":["../../../../src/client/term/AnimatedDock.tsx"],"names":[],"mappings":"AAAA;;;;;;;;;;;;;;;;;;;;;;GAsBG;AAEH,OAAO,EAA+B,KAAK,YAAY,EAAkB,MAAM,OAAO,CAAA;AAsBtF,wBAAgB,YAAY,IAAI,YAAY,CA0C3C"}
+{"version":3,"file":"AnimatedDock.d.ts","sourceRoot":"","sources":["../../../../src/client/term/AnimatedDock.tsx"],"names":[],"mappings":"AAAA;;;;;;;;;;;;;;;;;;;;;;;;GAwBG;AAEH,OAAO,EAA+B,KAAK,YAAY,EAAkB,MAAM,OAAO,CAAA;AA2BtF,wBAAgB,YAAY,IAAI,YAAY,CA0C3C"}

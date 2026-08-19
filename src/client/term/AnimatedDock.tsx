@@ -5,8 +5,10 @@
  *
  * This is a faithful port of the 21st.dev "Animated Dock" component: it uses
  * framer-motion's `useMotionValue` + `useSpring` + `useTransform` so each
- * circular icon grows (and pushes its neighbour) toward the cursor with real
- * spring physics — the buttery feel you can't get from a CSS transition.
+ * circular icon scales toward the cursor with real spring physics — the
+ * buttery feel you can't get from a CSS transition. Magnification is driven by
+ * `transform: scale()` (NOT `width`), so it never reflows the layout and the
+ * dock stays perfectly stable under the cursor.
  * Icons come from lucide-react. The dock itself is a frosted-glass pill.
  *
  * Two entries wire to the two right-side panels through window CustomEvents
@@ -35,13 +37,18 @@ const EV = {
   fileState: 'dsh-dock:filepanel-state',
 } as const
 
-/** Resting / peak icon size (px). Peak pushes the neighbour like a real dock. */
+/** Resting / peak icon size (px). */
 const BASE = 40
 const MAX = 58
+/** Magnification factor at the cursor (MAX / BASE). Driven via CSS `scale()`
+ *  so it never reflows the layout — this is what removed the old "jitter". */
+const MAX_SCALE = MAX / BASE
 /** Cursor distance (px) over which magnification falls to zero. */
 const DIST = 120
-/** Spring tuning for the magnification. */
-const DAMPING = 0.35
+/** Spring tuning. Near-critically damped (ratio ≈ 0.94) so the icon settles
+ *  smoothly with essentially no overshoot. The old `damping: 0.35` was
+ *  effectively zero damping and caused the wild oscillation. */
+const DAMPING = 28
 const STIFFNESS = 220
 
 export function AnimatedDock(): ReactElement {
@@ -88,7 +95,9 @@ export function AnimatedDock(): ReactElement {
   )
 }
 
-/** A single magnifying icon. Its width is a spring driven by cursor distance. */
+/** A single magnifying icon. Its `scale` is a spring driven by cursor distance.
+ *  Because we animate `transform` (not `width`), the layout never reflows, so
+ *  there is no neighbour-push feedback loop and the dock stays rock-steady. */
 function DockItem(props: {
   mouseX: MotionValue<number>
   active: boolean
@@ -101,15 +110,15 @@ function DockItem(props: {
     const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: BASE }
     return val - bounds.x - bounds.width / 2
   })
-  const width = useSpring(
-    useTransform(distance, [-DIST, 0, DIST], [BASE, MAX, BASE]),
+  const scale = useSpring(
+    useTransform(distance, [-DIST, 0, DIST], [1, MAX_SCALE, 1]),
     { damping: DAMPING, stiffness: STIFFNESS },
   )
   return (
     <motion.button
       ref={ref}
       type="button"
-      style={{ width }}
+      style={{ scale }}
       className={`${styles.item}${props.active ? ` ${styles.active}` : ''}`}
       onClick={props.onClick}
       aria-label={props.label}

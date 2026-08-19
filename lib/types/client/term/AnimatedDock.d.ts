@@ -5,8 +5,10 @@
  *
  * This is a faithful port of the 21st.dev "Animated Dock" component: it uses
  * framer-motion's `useMotionValue` + `useSpring` + `useTransform` so each
- * circular icon grows (and pushes its neighbour) toward the cursor with real
- * spring physics — the buttery feel you can't get from a CSS transition.
+ * circular icon scales toward the cursor with real spring physics — the
+ * buttery feel you can't get from a CSS transition. Magnification is driven by
+ * `transform: scale()` (NOT `width`), so it never reflows the layout and the
+ * dock stays perfectly stable under the cursor.
  * Icons come from lucide-react. The dock itself is a frosted-glass pill.
  *
  * Two entries wire to the two right-side panels through window CustomEvents
