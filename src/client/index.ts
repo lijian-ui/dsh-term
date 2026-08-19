@@ -42,8 +42,36 @@ const EV = {
   terminalState: 'dsh-dock:terminal-state',
 } as const
 
-/** Width of the docked terminal column, in px (the 6th grid track). */
-const TERMINAL_WIDTH = 300
+/** Terminal column width bounds and persistence. */
+const MIN_TERM_WIDTH = 200
+const MAX_TERM_WIDTH = 600
+const DEFAULT_TERM_WIDTH = 300
+const TERM_WIDTH_KEY = 'dsh-term-width-px'
+const TERM_HANDLE_WIDTH = 8
+
+function readTermWidth(): number {
+  try {
+    const raw = localStorage.getItem(TERM_WIDTH_KEY)
+    if (raw === null) return DEFAULT_TERM_WIDTH
+    const v = Number(raw)
+    if (!Number.isFinite(v) || v < MIN_TERM_WIDTH || v > MAX_TERM_WIDTH) return DEFAULT_TERM_WIDTH
+    return v
+  } catch { return DEFAULT_TERM_WIDTH }
+}
+
+function writeTermWidth(v: number): void {
+  try { localStorage.setItem(TERM_WIDTH_KEY, String(Math.round(v))) } catch { /* best-effort */ }
+}
+
+/** Inject the drag-handle visual styles once. */
+function adoptHandleStyles(): void {
+  const id = 'dsh-term-handle-style'
+  if (document.getElementById(id) !== null) return
+  const tag = document.createElement('style')
+  tag.id = id
+  tag.textContent = '.dsh-term-handle{touch-action:none;cursor:col-resize}'
+  document.head.appendChild(tag)
+}
 
 /** Locate the frame grid (same heuristic file-manager uses). */
 function findFrame(): HTMLElement | null {
@@ -73,34 +101,6 @@ function whenFrameReady(cb: (frame: HTMLElement) => void): () => void {
   return () => obs.disconnect()
 }
 
-/** Inject the launcher button styles once (the button is a raw DOM node). */
-function adoptLauncherStyles(): void {
-  const id = 'dsh-term-launcher-style'
-  if (document.getElementById(id) !== null) return
-  const tag = document.createElement('style')
-  tag.id = id
-  tag.textContent = `
-.dsh-term-launcher {
-  position: fixed;
-  right: 12px;
-  bottom: 12px;
-  z-index: 40;
-  height: 30px;
-  padding: 0 14px;
-  border-radius: 6px;
-  border: 1px solid var(--aion-bg-3, #e5e6eb);
-  background: var(--aion-bg-1, #ffffff);
-  color: var(--aion-fg-1, #1f2329);
-  font-size: 13px;
-  font-family: var(--aion-font-sans, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif);
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-.dsh-term-launcher:hover {
-  background: var(--aion-bg-2, #f2f3f5);
-}`
-  document.head.appendChild(tag)
-}
 
 /**
  * Parse a `grid-template-columns` string into raw tokens. Named lines
@@ -165,6 +165,7 @@ export function apply(ctx: ClientContext): void {
       col.dataset.dshTermCol = ''
       col.style.minWidth = '0'
       col.style.height = '100%'
+      col.style.display = 'none'
       frame.appendChild(col)
 
       // Keep the terminal the rightmost column even if file-manager appends
@@ -174,18 +175,24 @@ export function apply(ctx: ClientContext): void {
       })
       keepLast.observe(frame, { childList: true })
 
-      // Re-open button (after a collapse). Hidden while the column is open.
-      adoptLauncherStyles()
-      const launcher = document.createElement('button')
-      launcher.type = 'button'
-      launcher.className = 'dsh-term-launcher'
-      launcher.textContent = '终端'
-      launcher.setAttribute('aria-label', '打开终端')
-      launcher.style.display = 'none'
-      document.body.appendChild(launcher)
 
       // Open/closed state. Closed by default (the column is a docked track).
       let terminalOpen = false
+      let terminalWidth = readTermWidth()
+
+      // The drag handle on the terminal column's left edge (drag left = wider).
+      adoptHandleStyles()
+      const handle = document.createElement('div')
+      handle.className = 'dsh-term-handle'
+      handle.style.position = 'absolute'
+      handle.style.top = '0'
+      handle.style.bottom = '0'
+      handle.style.width = `${TERM_HANDLE_WIDTH}px`
+      handle.style.marginLeft = `${-TERM_HANDLE_WIDTH / 2}px`
+      handle.style.zIndex = '30'
+      handle.style.cursor = 'col-resize'
+      handle.style.display = 'none'
+      frame.appendChild(handle)
 
       /**
        * Re-assert the frame grid: keep file-manager's tracks, append our
@@ -205,11 +212,19 @@ export function apply(ctx: ClientContext): void {
         // (e.g. the shell's own 3-track write landed before file-manager
         // re-applied). Touching it now would desync file-manager's width math.
         if (tokens.length !== baseLen) return
-        if (terminalOpen) tokens.push('[dsh-term]', `${TERMINAL_WIDTH}px`)
+        if (terminalOpen) tokens.push('[dsh-term]', `${terminalWidth}px`)
         const next = tokens.join(' ')
         if (next !== frame.style.gridTemplateColumns) {
           frame.style.gridTemplateColumns = next
         }
+        // Keep the drag handle glued to the terminal column's left edge.
+        if (terminalOpen) {
+          const frameRect = frame.getBoundingClientRect()
+          const colRect = col.getBoundingClientRect()
+          const leftEdge = colRect.left - frameRect.left
+          handle.style.left = `${Math.round(leftEdge)}px`
+        }
+        handle.style.display = terminalOpen ? 'block' : 'none'
       }
 
       // Re-assert after file-manager rewrites the grid (drag / resize / collapse).
@@ -223,13 +238,72 @@ export function apply(ctx: ClientContext): void {
       const setVisible = (open: boolean): void => {
         terminalOpen = open
         col.style.display = open ? 'flex' : 'none'
-        launcher.style.display = open ? 'none' : 'flex'
         reconcileGrid()
         window.dispatchEvent(new CustomEvent(EV.terminalState, { detail: open }))
       }
       const onToggleTerminal = (): void => setVisible(!terminalOpen)
       window.addEventListener(EV.toggleTerminal, onToggleTerminal)
-      launcher.addEventListener('click', () => setVisible(true))
+
+      // Drag the handle to resize the terminal column (left = wider).
+      handle.addEventListener('pointerdown', (event: PointerEvent): void => {
+        if (event.button !== 0) return
+        event.preventDefault()
+        handle.setPointerCapture(event.pointerId)
+        const startX = event.clientX
+        const startWidth = terminalWidth
+        let rafId: number | null = null
+        let pendingWidth: number | null = null
+        let latestWidth = startWidth
+
+        document.body.style.userSelect = 'none'
+        document.body.style.cursor = 'col-resize'
+        frame.setAttribute('data-dragging', '')
+        handle.setAttribute('data-dragging', '')
+
+        const flush = (): void => {
+          if (pendingWidth === null) return
+          latestWidth = pendingWidth
+          terminalWidth = pendingWidth
+          reconcileGrid()
+        }
+
+        const computeWidth = (clientX: number): number => {
+          const deltaX = startX - clientX
+          return Math.min(MAX_TERM_WIDTH, Math.max(MIN_TERM_WIDTH, startWidth + deltaX))
+        }
+
+        const finish = (clientX: number | null): void => {
+          handle.removeEventListener('pointermove', onMove)
+          handle.removeEventListener('pointerup', onUp)
+          handle.removeEventListener('pointercancel', onCancel)
+          try { handle.releasePointerCapture(event.pointerId) } catch { /* already released */ }
+          document.body.style.userSelect = ''
+          document.body.style.cursor = ''
+          frame.removeAttribute('data-dragging')
+          handle.removeAttribute('data-dragging')
+          if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null }
+          flush()
+          const finalWidth = clientX === null ? latestWidth : computeWidth(clientX)
+          terminalWidth = finalWidth
+          reconcileGrid()
+          writeTermWidth(finalWidth)
+        }
+
+        const onMove = (e: PointerEvent): void => {
+          if (e.buttons === 0) { finish(e.clientX); return }
+          pendingWidth = computeWidth(e.clientX)
+          if (rafId === null) {
+            rafId = requestAnimationFrame(() => { rafId = null; flush() })
+          }
+        }
+        const onUp = (e: PointerEvent): void => finish(e.clientX)
+        const onCancel = (): void => finish(null)
+
+        handle.addEventListener('pointermove', onMove)
+        handle.addEventListener('pointerup', onUp)
+        handle.addEventListener('pointercancel', onCancel)
+      })
+
       root.render(createElement(TerminalPanel, { ctx, api, onClose: () => setVisible(false) }))
 
       disposeFrame = () => {
@@ -238,7 +312,7 @@ export function apply(ctx: ClientContext): void {
         window.removeEventListener(EV.toggleTerminal, onToggleTerminal)
         root.unmount()
         col.remove()
-        launcher.remove()
+        handle.remove()
       }
     })
     return () => {

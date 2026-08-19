@@ -45,11 +45,35 @@ function adoptXtermStyles(): void {
 /** Terminal theme matching the shell's light/dark marker. */
 function themeOf(): Record<string, string> {
   const dark = document.body.dataset.dsDarkTheme !== undefined
+  if (dark) {
+    return {
+      background: '#0e0e0e',
+      foreground: '#ced3da',
+      cursor: '#ced3da',
+      selectionBackground: 'rgba(255,255,255,0.2)',
+    }
+  }
   return {
-    background: dark ? '#0e0e0e' : '#ffffff',
-    foreground: dark ? '#ced3da' : '#1f2329',
-    cursor: dark ? '#ced3da' : '#1f2329',
-    selectionBackground: dark ? 'rgba(255,255,255,0.2)' : 'rgba(22,93,255,0.25)',
+    background: '#ffffff',
+    foreground: '#1f2329',
+    cursor: '#1f2329',
+    selectionBackground: 'rgba(22,93,255,0.25)',
+    black: '#1f2329',
+    red: '#d4393b',
+    green: '#167c2e',
+    yellow: '#b58900',
+    blue: '#0a4d8c',
+    magenta: '#a020a0',
+    cyan: '#0379a6',
+    white: '#5a5f66',
+    brightBlack: '#6a6f76',
+    brightRed: '#e5585a',
+    brightGreen: '#1a9c3a',
+    brightYellow: '#d6a200',
+    brightBlue: '#1a6fcf',
+    brightMagenta: '#c040c0',
+    brightCyan: '#1aa0d6',
+    brightWhite: '#2f353b',
   }
 }
 
