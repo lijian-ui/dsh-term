@@ -179,7 +179,13 @@ const clientConfig = {
     entryFileNames: 'client.js',
     banner: `window.__ModuleLoader__.load({ id: ${JSON.stringify(PLUGIN_ID)}, factory: (require) => {`,
     footer: 'return module.exports; } });',
-    intro: 'var module = { exports: {} }; var exports = module.exports;',
+    // framer-motion (pulled in for the AnimatedDock spring physics) references
+    // `process.env.NODE_ENV` without a `typeof process` guard in several places.
+    // rolldown's `define` does not reliably replace the `process.env.*` member
+    // chain, so in a browser context `process` is undefined and the slot crashes
+    // with "ReferenceError: process is not defined". Inject a minimal shim so
+    // those reads resolve to the production build path.
+    intro: 'var module = { exports: {} }; var exports = module.exports; var process = { env: { NODE_ENV: "production" } };',
   },
 }
 

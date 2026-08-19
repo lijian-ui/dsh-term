@@ -25,11 +25,22 @@ import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
 // Type-only: pulls the ui-slots SlotMap merge (keeps bundle purity gates calm).
 import type {} from '@deepseek-ai/dsh-client-ui-slots'
 import type {} from '@deepseek-ai/dsh-client-locale/client'
+// Type-only: merges the conversation header slots (incl.
+// `conversation.session.header.utilities`) onto the SlotMap so we can register
+// the header tool-dock against the official, typed slot.
+import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
 import { TermApi } from './term/api.ts'
 import { TerminalPanel } from './term/TerminalPanel.tsx'
+import { AnimatedDock } from './term/AnimatedDock.tsx'
 
 /** Required services: sessions (for the workspace cwd). */
 export const inject = ['sessions']
+
+/** Cross-plugin event names shared with the AnimatedDock header group. */
+const EV = {
+  toggleTerminal: 'dsh-dock:toggle-terminal',
+  terminalState: 'dsh-dock:terminal-state',
+} as const
 
 /** Width of the docked terminal column, in px (the 6th grid track). */
 const TERMINAL_WIDTH = 300
@@ -132,6 +143,17 @@ function stripTerminalTrack(tokens: readonly string[]): string[] {
 
 /** Apply the browser half. */
 export function apply(ctx: ClientContext): void {
+  // 会话页 header 工具坞：紧贴「Session log」左侧的放大按钮组
+  ctx.inject(['slots'], (scope: ClientContext) => {
+    scope.slots.inject('conversation.session.header.utilities', () =>
+      scope.slots.register({
+        name: 'conversation.session.header.utilities',
+        id: 'dsh-dock',
+        order: -1,
+        inject: () => ({}),
+      }, AnimatedDock))
+  })
+
   ctx.effect(() => {
     let disposeFrame: (() => void) | undefined
     const offWait = whenFrameReady((frame) => {
@@ -203,13 +225,17 @@ export function apply(ctx: ClientContext): void {
         col.style.display = open ? 'flex' : 'none'
         launcher.style.display = open ? 'none' : 'flex'
         reconcileGrid()
+        window.dispatchEvent(new CustomEvent(EV.terminalState, { detail: open }))
       }
+      const onToggleTerminal = (): void => setVisible(!terminalOpen)
+      window.addEventListener(EV.toggleTerminal, onToggleTerminal)
       launcher.addEventListener('click', () => setVisible(true))
       root.render(createElement(TerminalPanel, { ctx, api, onClose: () => setVisible(false) }))
 
       disposeFrame = () => {
         keepLast.disconnect()
         styleObserver.disconnect()
+        window.removeEventListener(EV.toggleTerminal, onToggleTerminal)
         root.unmount()
         col.remove()
         launcher.remove()

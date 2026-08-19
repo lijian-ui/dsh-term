@@ -1,0 +1,67 @@
+/* Frosted-glass dock container — the macOS "pill" holding the magnifying icons. */
+.dock {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 40px;
+  padding: 0 10px 4px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: visible;
+}
+
+/* Circular icon button. Width is a framer-motion spring (set inline), so the
+   icon grows and pushes its neighbour like a real dock. aspect-ratio keeps the
+   height in lockstep with the animated width. */
+.item {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--aion-fg-2, #c9cdd4);
+  cursor: pointer;
+  overflow: visible;
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.item:hover {
+  background: rgba(255, 255, 255, 0.22);
+  color: var(--aion-fg-1, #ffffff);
+}
+
+/* Open-panel highlight: primary tint + thin ring to mirror the live state. */
+.item.active {
+  background: var(--aion-primary-soft, rgba(22, 93, 255, 0.28));
+  color: var(--aion-primary, #6ea0ff);
+  box-shadow: 0 0 0 1.5px var(--aion-primary, #6ea0ff);
+}
+
+/* Hover tooltip — the small label that floats above each icon (21st.dev style). */
+.tooltip {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+  color: var(--aion-fg-1, #ffffff);
+  background: rgba(20, 20, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.item:hover .tooltip {
+  opacity: 1;
+}
