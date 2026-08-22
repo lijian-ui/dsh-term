@@ -1,7 +1,7 @@
 {
   "name": "@lijian-ui/dsh-term",
   "description": "Panel-style local + SSH terminal for the DSH web GUI: real PTY sessions (node-pty), multi-tab terminal panel with xterm.js, workspace-cwd shells — hot-pluggable via a profile bundle without any dsh source changes",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/types/index.d.ts",
