@@ -7,9 +7,11 @@
 
 import type { Context } from '@deepseek-ai/cordis'
 import type {} from '@deepseek-ai/dsh-host-webserver'
+import { settingsNamespace } from '@deepseek-ai/dsh-settings'
 import { mountOnce } from './mount-once.ts'
 import { PtyService } from './host/pty-service.ts'
 import { registerTermRoutes } from './host/routes.ts'
+import { createTranslator, type Lang } from './gateway/i18n.ts'
 
 /** Required services: the route registry. */
 export const inject = ['webServer']
@@ -25,13 +27,41 @@ export const apply = mountOnce('@lijian-ui/dsh-term', applyImpl)
 
 function applyImpl(ctx: Context): void {
   const pty = new PtyService()
+
+  /** Current language; resolved from dsh global settings. */
+  let lang: Lang = 'zh'
+  const t = createTranslator(lang)
+
+  /** Resolve the user's language preference from dsh settings. */
+  function resolveLang(): Lang {
+    try {
+      const settings = ctx.get('settings') as
+        | { get(ns: unknown): { preference?: string } | undefined }
+        | undefined
+      if (!settings) return 'zh'
+      const section = settings.get(settingsNamespace('locale'))
+      return section?.preference === 'en' ? 'en' : 'zh'
+    } catch {
+      return 'zh'
+    }
+  }
+
   // Route registration + pty teardown both ride the effect fiber: the effect
   // callback runs immediately and its return value is the fiber disposer.
   ctx.effect(() => {
-    const disposeRoutes = registerTermRoutes(ctx, pty)
+    lang = resolveLang()
+    // t is a closure over lang; no separate sync needed.
+    const disposeRoutes = registerTermRoutes(ctx, pty, () => createTranslator(lang))
     return () => {
       disposeRoutes()
       pty.dispose()
     }
   }, 'dsh-term: routes + pty lifecycle')
+
+  // Listen for global language changes (dsh settings → General → Language).
+  ctx.root.on('settings/updated', (ns, next) => {
+    if (ns !== settingsNamespace('locale')) return
+    const pref = (next as { preference?: string })?.preference
+    lang = pref === 'en' ? 'en' : 'zh'
+  })
 }

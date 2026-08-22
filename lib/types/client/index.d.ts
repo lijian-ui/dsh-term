@@ -19,6 +19,13 @@
  * @module dsh-term/client
  */
 import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client';
+/** Augment the locale namespace map so ctx.locale.register/bind accept 'dsh-term'. */
+declare module '@deepseek-ai/dsh-client-ui-slots' {
+    interface LocaleNamespaceMap {
+        /** Terminal panel copy. */
+        'dsh-term': 'ui.panel.title' | 'ui.panel.addTabTitle' | 'ui.panel.collapseTitle' | 'ui.panel.emptyHint' | 'ui.tab.closeAria' | 'msg.sessionExited' | 'msg.spawnFailed' | 'ui.dock.label';
+    }
+}
 /** Required services: sessions (for the workspace cwd). */
 export declare const inject: string[];
 /** Apply the browser half. */

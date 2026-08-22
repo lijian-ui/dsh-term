@@ -64,6 +64,7 @@ export type TermEvent = {
     readonly kind: 'exit';
     readonly id: string;
     readonly exitCode: number;
+    readonly message?: string;
 } | {
     readonly kind: 'start';
     readonly session: TermSessionInfo;

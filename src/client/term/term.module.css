@@ -151,3 +151,140 @@
   color: var(--aion-text-tertiary, #86909c);
   font-size: 13px;
 }
+
+.shellSelect {
+  flex: none;
+  height: 22px;
+  padding: 0 6px;
+  border: 1px solid var(--aion-border-base, #e5e6eb);
+  border-radius: 5px;
+  background: var(--aion-bg-base, #ffffff);
+  color: var(--aion-text-primary, #1f2329);
+  font-size: 12px;
+  cursor: pointer;
+  outline: none;
+}
+
+.shellSelect:hover {
+  border-color: var(--aion-border-strong, #c9cdd4);
+}
+
+.shellSelect:focus {
+  border-color: var(--aion-primary, #1677ff);
+}
+
+.reopenBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  padding: 0 6px;
+  border: none;
+  border-radius: 5px;
+  background: var(--aion-bg-2, #f2f3f5);
+  color: var(--aion-text-secondary, #454d5f);
+  font-size: 12px;
+  cursor: pointer;
+  gap: 2px;
+}
+
+.reopenBtn:hover {
+  background: var(--aion-bg-3, #e5e6eb);
+  color: var(--aion-text-primary, #000000);
+}
+
+.reopenDropdown {
+  position: absolute;
+  top: 32px;
+  left: 6px;
+  z-index: 50;
+  min-width: 180px;
+  max-width: 280px;
+  padding: 4px 0;
+  border: 1px solid var(--aion-border-base, #e5e6eb);
+  border-radius: 8px;
+  background: var(--aion-bg-base, #ffffff);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.reopenHeader {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--aion-text-tertiary, #86909c);
+  user-select: none;
+}
+
+.reopenItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px 0 4px;
+}
+
+.reopenItemBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--aion-text-primary, #1f2329);
+  font-size: 12px;
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reopenItemBtn:hover {
+  background: var(--aion-bg-2, #f2f3f5);
+}
+
+.reopenItemKill {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--aion-text-tertiary, #86909c);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.reopenItemKill:hover {
+  background: var(--aion-bg-3, #e5e6eb);
+  color: var(--aion-text-primary, #000000);
+}
+
+.addToChatBtn {
+  position: absolute;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--aion-border-base, #e5e6eb);
+  border-radius: 14px;
+  background: var(--aion-bg-base, #ffffff);
+  color: var(--aion-text-primary, #1f2329);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+.addToChatBtn:hover {
+  background: var(--aion-bg-2, #f2f3f5);
+  border-color: var(--aion-primary, #1677ff);
+  color: var(--aion-primary, #1677ff);
+}

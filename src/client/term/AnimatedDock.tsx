@@ -15,6 +15,7 @@
  */
 import { useEffect, useState, type ReactElement } from 'react'
 import { DockItem } from './DockItem.tsx'
+import { getT } from '../i18n-seat.ts'
 
 const EV = {
   toggleTerminal: 'dsh-dock:toggle-terminal',
@@ -22,6 +23,7 @@ const EV = {
 } as const
 
 export function AnimatedDock(): ReactElement {
+  const t = getT()
   const [active, setActive] = useState(false)
   useEffect(() => {
     const onState = (e: Event): void => setActive(Boolean((e as CustomEvent).detail))
@@ -31,7 +33,7 @@ export function AnimatedDock(): ReactElement {
   return (
     <DockItem
       active={active}
-      label="终端"
+      label={t('ui.dock.label')}
       onClick={() => window.dispatchEvent(new CustomEvent(EV.toggleTerminal))}
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

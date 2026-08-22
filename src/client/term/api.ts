@@ -5,7 +5,7 @@
  * @module dsh-term/client/term/api
  */
 
-import type { TermEvent, TermSessionInfo, TermSpawnRequest } from '../../core/types.ts'
+import type { ShellInfo, TermEvent, TermSessionInfo, TermSpawnRequest } from '../../core/types.ts'
 
 /** Envelope mirror of the host route layer. */
 type Envelope<T> = { ok: true; value: T } | { ok: false; error: { code: string; message: string } }
@@ -38,9 +38,24 @@ export class TermApi {
     return call<{ ok: boolean }>('/dsh-term/resize', { id, cols, rows })
   }
 
-  /** Close one session. */
+  /** Close one session (kill the PTY). */
   close(id: string): Promise<{ ok: boolean }> {
     return call<{ ok: boolean }>('/dsh-term/close', { id })
+  }
+
+  /** Detach a session (keep the PTY alive, mark as detached). */
+  detach(id: string): Promise<{ ok: boolean }> {
+    return call<{ ok: boolean }>('/dsh-term/detach', { id })
+  }
+
+  /** Reattach to a detached session; returns the wire info. */
+  reattach(id: string): Promise<TermSessionInfo> {
+    return call<TermSessionInfo>('/dsh-term/reattach', { id })
+  }
+
+  /** List available shells on the host. */
+  shells(): Promise<{ shells: readonly ShellInfo[] }> {
+    return call<{ shells: readonly ShellInfo[] }>('/dsh-term/shells')
   }
 
   /** Current session listing (used on reconnect). */

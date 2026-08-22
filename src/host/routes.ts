@@ -9,9 +9,10 @@
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { Context } from '@deepseek-ai/cordis'
 import type {} from '@deepseek-ai/dsh-host-webserver'
-import type { TermEvent, TermSpawnRequest } from '../core/types.ts'
+import type { ShellType, TermEvent, TermSpawnRequest } from '../core/types.ts'
 import type { PtyService } from './pty-service.ts'
 import { isLoopbackRequest } from './loopback.ts'
+import type { Translator } from '../gateway/i18n.ts'
 
 /** JSON envelope mirrors the file-manager panel shape. */
 type Envelope<T> = { ok: true; value: T } | { ok: false; error: { code: string; message: string } }
@@ -63,9 +64,10 @@ function json(res: ServerResponse, envelope: Envelope<unknown>, status = 200): v
  * Register the /dsh-term routes.
  * @param ctx - context carrying the webServer service.
  * @param pty - the session registry.
+ * @param getT - lazy translator getter (reflects current language).
  * @returns route disposers.
  */
-export function registerTermRoutes(ctx: Context, pty: PtyService): () => void {
+export function registerTermRoutes(ctx: Context, pty: PtyService, getT: () => Translator): () => void {
   const subscribers = new Set<Subscriber>()
   const push = (event: TermEvent): void => {
     for (const subscriber of subscribers) {
@@ -74,7 +76,12 @@ export function registerTermRoutes(ctx: Context, pty: PtyService): () => void {
   }
 
   pty.onOutput = (id, data) => push({ kind: 'output', id, data })
-  pty.onExit = (id, exitCode) => push({ kind: 'exit', id, exitCode })
+  pty.onExit = (id, exitCode) => {
+    const msg = getT().t('msg.sessionExited', exitCode)
+    push({ kind: 'exit', id, exitCode, message: msg })
+  }
+  pty.onDetach = (id) => push({ kind: 'detached', id })
+  pty.onReattach = (session) => push({ kind: 'reattached', session })
 
   const handler = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
     if (!isLoopbackRequest(req)) {
@@ -85,6 +92,11 @@ export function registerTermRoutes(ctx: Context, pty: PtyService): () => void {
     try {
       if (req.method === 'GET' && url.pathname === '/dsh-term/list') {
         json(res, OK({ sessions: pty.list() }))
+        return
+      }
+      if (req.method === 'GET' && url.pathname === '/dsh-term/shells') {
+        const shells = await pty.detectShells()
+        json(res, OK({ shells }))
         return
       }
       if (req.method !== 'POST') {
@@ -105,13 +117,18 @@ export function registerTermRoutes(ctx: Context, pty: PtyService): () => void {
             json(res, MALFORMED, 400)
             return
           }
+          const validShells: readonly ShellType[] = ['bash', 'zsh', 'powershell', 'cmd', 'gitbash']
           const session = pty.spawn({
             name: typeof request.name === 'string' ? request.name : undefined,
             cwd: typeof request.cwd === 'string' ? request.cwd : undefined,
-            shell: typeof request.shell === 'string' ? request.shell : undefined,
+            shell: typeof request.shell === 'string' && validShells.includes(request.shell as ShellType)
+              ? request.shell as ShellType : undefined,
             args: Array.isArray(request.args) ? request.args.filter((a): a is string => typeof a === 'string') : undefined,
             cols: typeof request.cols === 'number' ? request.cols : undefined,
             rows: typeof request.rows === 'number' ? request.rows : undefined,
+            env: typeof request.env === 'object' && request.env !== null
+              ? Object.fromEntries(Object.entries(request.env).filter(([, v]) => typeof v === 'string')) as Record<string, string>
+              : undefined,
           })
           push({ kind: 'start', session })
           json(res, OK(session))
@@ -151,6 +168,29 @@ export function registerTermRoutes(ctx: Context, pty: PtyService): () => void {
             return
           }
           json(res, OK({ ok: pty.close(body.id) }))
+          return
+        }
+        case '/dsh-term/detach': {
+          const body = payload as { id?: unknown }
+          if (typeof body?.id !== 'string') {
+            json(res, MALFORMED, 400)
+            return
+          }
+          json(res, OK({ ok: pty.detach(body.id) }))
+          return
+        }
+        case '/dsh-term/reattach': {
+          const body = payload as { id?: unknown }
+          if (typeof body?.id !== 'string') {
+            json(res, MALFORMED, 400)
+            return
+          }
+          const session = pty.reattach(body.id)
+          if (session === null) {
+            json(res, FAIL('session not found', 'not_found'), 404)
+            return
+          }
+          json(res, OK(session))
           return
         }
         default:

@@ -14,11 +14,16 @@
  */
 import type { JSX } from 'react';
 import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client';
+import type { TranslateNS } from '@deepseek-ai/dsh-client-ui-slots';
 import type { TermApi } from './api.ts';
-/** The docked panel: header (title / tabs / new / collapse) + xterm stage. */
-export declare function TerminalPanel({ ctx, api, onClose, }: {
+/** Injected props for the panel. */
+interface PanelProps {
     ctx: ClientContext;
     api: TermApi;
     onClose: () => void;
-}): JSX.Element;
+    t: TranslateNS<'dsh-term'>;
+}
+/** The docked panel: header (title / tabs / new / collapse) + xterm stage. */
+export declare function TerminalPanel({ ctx, api, onClose, t, }: PanelProps): JSX.Element;
+export {};
 //# sourceMappingURL=TerminalPanel.d.ts.map

@@ -29,12 +29,22 @@ import type {} from '@deepseek-ai/dsh-client-locale/client'
 // `conversation.session.header.utilities`) onto the SlotMap so we can register
 // the header tool-dock against the official, typed slot.
 import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
+
+/** Augment the locale namespace map so ctx.locale.register/bind accept 'dsh-term'. */
+declare module '@deepseek-ai/dsh-client-ui-slots' {
+  interface LocaleNamespaceMap {
+    /** Terminal panel copy. */
+    'dsh-term': 'ui.panel.title' | 'ui.panel.addTabTitle' | 'ui.panel.collapseTitle' | 'ui.panel.emptyHint' | 'ui.tab.closeAria' | 'msg.sessionExited' | 'msg.spawnFailed' | 'ui.dock.label' | 'ui.panel.shellTitle' | 'ui.shell.bash' | 'ui.shell.zsh' | 'ui.shell.powershell' | 'ui.shell.cmd' | 'ui.shell.gitbash' | 'ui.panel.reopenTitle' | 'ui.panel.backgroundSessions' | 'ui.panel.noBackground' | 'ui.panel.addToChat'
+  }
+}
+import { zh as clientZh, en as clientEn } from './client-i18n.ts'
 import { TermApi } from './term/api.ts'
 import { TerminalPanel } from './term/TerminalPanel.tsx'
 import { AnimatedDock } from './term/AnimatedDock.tsx'
+import { bindI18n } from './i18n-seat.ts'
 
-/** Required services: sessions (for the workspace cwd). */
-export const inject = ['sessions']
+/** Required services: sessions (for the workspace cwd), conversation (for add-to-chat). */
+export const inject = ['sessions', 'locale', 'slots', 'conversation']
 
 /** Cross-plugin event names shared with the AnimatedDock header group. */
 const EV = {
@@ -143,6 +153,15 @@ function stripTerminalTrack(tokens: readonly string[]): string[] {
 
 /** Apply the browser half. */
 export function apply(ctx: ClientContext): void {
+  // Register client-side bilingual dictionaries.
+  const I18N_NS = 'dsh-term'
+  ctx.effect(
+    () => ctx.locale.register(I18N_NS, { zh: clientZh, en: clientEn }),
+    'dsh-term: client dictionaries'
+  )
+  const t = ctx.locale.bind(I18N_NS)
+  bindI18n(t)  // publish to module-level seat for use by components outside slots
+
   // 会话页 header 工具坞：紧贴「Session log」左侧的放大按钮组
   ctx.inject(['slots'], (scope: ClientContext) => {
     scope.slots.inject('conversation.session.header.utilities', () =>
@@ -304,7 +323,7 @@ export function apply(ctx: ClientContext): void {
         handle.addEventListener('pointercancel', onCancel)
       })
 
-      root.render(createElement(TerminalPanel, { ctx, api, onClose: () => setVisible(false) }))
+      root.render(createElement(TerminalPanel, { ctx, api, onClose: () => setVisible(false), t }))
 
       disposeFrame = () => {
         keepLast.disconnect()

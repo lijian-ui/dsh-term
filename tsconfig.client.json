@@ -28,6 +28,7 @@
     "src/client/**/*.ts",
     "src/client/**/*.tsx",
     "src/core/**/*.ts",
+    "src/gateway/**/*.ts",
     "src/client/css-modules.d.ts"
   ]
 }

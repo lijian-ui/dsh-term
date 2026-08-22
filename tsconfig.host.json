@@ -27,6 +27,7 @@
     "src/index.ts",
     "src/mount-once.ts",
     "src/core/**/*.ts",
+    "src/gateway/**/*.ts",
     "src/host/**/*.ts"
   ]
 }
