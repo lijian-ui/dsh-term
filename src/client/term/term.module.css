@@ -10,8 +10,8 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  border-left: 1px solid var(--aion-border-base, #e5e6eb);
-  background: var(--aion-bg-1, #f9fafb);
+  border-left: 1px solid var(--dsw-alias-border-l2);
+  background: var(--dsw-alias-bg-layer-1);
   overflow: hidden;
   font-family: var(--aion-font-sans, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif);
 }
@@ -21,7 +21,7 @@
   padding: 0 8px;
   font-size: 12px;
   font-weight: 600;
-  color: var(--aion-text-primary, #1f2329);
+  color: var(--dsw-alias-label-primary);
   user-select: none;
 }
 
@@ -30,7 +30,7 @@
   width: 1px;
   height: 16px;
   margin: 0 4px;
-  background: var(--aion-border-base, #e5e6eb);
+  background: var(--dsw-alias-border-l2);
 }
 
 .toolbar {
@@ -39,8 +39,8 @@
   gap: 4px;
   height: 32px;
   padding: 0 6px;
-  border-bottom: 1px solid var(--aion-border-base, #e5e6eb);
-  background: var(--aion-bg-base, #ffffff);
+  border-bottom: 1px solid var(--dsw-alias-border-l2);
+  background: var(--dsw-alias-bg-base);
   flex: none;
 }
 
@@ -53,15 +53,15 @@
   border-radius: 5px;
   border: none;
   background: transparent;
-  color: var(--aion-text-secondary, #454d5f);
+  color: var(--dsw-alias-label-secondary);
   font-size: 12px;
   cursor: pointer;
   max-width: 200px;
 }
 
 .tabActive {
-  background: var(--aion-bg-2, #f2f3f5);
-  color: var(--aion-text-primary, #000000);
+  background: var(--dsw-alias-bg-layer-2);
+  color: var(--dsw-alias-label-primary);
 }
 
 .tabClose {
@@ -73,15 +73,15 @@
   border: none;
   border-radius: 3px;
   background: transparent;
-  color: var(--aion-text-tertiary, #86909c);
+  color: var(--dsw-alias-label-tertiary);
   font-size: 11px;
   line-height: 1;
   cursor: pointer;
 }
 
 .tabClose:hover {
-  background: var(--aion-bg-3, #e5e6eb);
-  color: var(--aion-text-primary, #000000);
+  background: var(--dsw-alias-bg-layer-3);
+  color: var(--dsw-alias-label-primary);
 }
 
 .addTab {
@@ -93,13 +93,13 @@
   border: none;
   border-radius: 5px;
   background: transparent;
-  color: var(--aion-text-secondary, #454d5f);
+  color: var(--dsw-alias-label-secondary);
   font-size: 14px;
   cursor: pointer;
 }
 
 .addTab:hover {
-  background: var(--aion-bg-2, #f2f3f5);
+  background: var(--dsw-alias-bg-layer-2);
 }
 
 .spacer {
@@ -115,20 +115,20 @@
   border: none;
   border-radius: 5px;
   background: transparent;
-  color: var(--aion-text-secondary, #454d5f);
+  color: var(--dsw-alias-label-secondary);
   font-size: 13px;
   cursor: pointer;
 }
 
 .collapse:hover {
-  background: var(--aion-bg-2, #f2f3f5);
+  background: var(--dsw-alias-bg-layer-2);
 }
 
 .stage {
   position: relative;
   flex: 1;
   min-height: 0;
-  background: var(--aion-bg-base, #ffffff);
+  background: var(--dsw-alias-bg-base);
 }
 
 .termWrap {
@@ -148,7 +148,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--aion-text-tertiary, #86909c);
+  color: var(--dsw-alias-label-tertiary);
   font-size: 13px;
 }
 
@@ -156,21 +156,21 @@
   flex: none;
   height: 22px;
   padding: 0 6px;
-  border: 1px solid var(--aion-border-base, #e5e6eb);
+  border: 1px solid var(--dsw-alias-border-l2);
   border-radius: 5px;
-  background: var(--aion-bg-base, #ffffff);
-  color: var(--aion-text-primary, #1f2329);
+  background: var(--dsw-alias-bg-base);
+  color: var(--dsw-alias-label-primary);
   font-size: 12px;
   cursor: pointer;
   outline: none;
 }
 
 .shellSelect:hover {
-  border-color: var(--aion-border-strong, #c9cdd4);
+  border-color: var(--dsw-alias-border-l1);
 }
 
 .shellSelect:focus {
-  border-color: var(--aion-primary, #1677ff);
+  border-color: var(--dsw-alias-state-business-primary);
 }
 
 .reopenBtn {
@@ -181,16 +181,16 @@
   padding: 0 6px;
   border: none;
   border-radius: 5px;
-  background: var(--aion-bg-2, #f2f3f5);
-  color: var(--aion-text-secondary, #454d5f);
+  background: var(--dsw-alias-bg-layer-2);
+  color: var(--dsw-alias-label-secondary);
   font-size: 12px;
   cursor: pointer;
   gap: 2px;
 }
 
 .reopenBtn:hover {
-  background: var(--aion-bg-3, #e5e6eb);
-  color: var(--aion-text-primary, #000000);
+  background: var(--dsw-alias-bg-layer-3);
+  color: var(--dsw-alias-label-primary);
 }
 
 .reopenDropdown {
@@ -201,9 +201,9 @@
   min-width: 180px;
   max-width: 280px;
   padding: 4px 0;
-  border: 1px solid var(--aion-border-base, #e5e6eb);
+  border: 1px solid var(--dsw-alias-border-l2);
   border-radius: 8px;
-  background: var(--aion-bg-base, #ffffff);
+  background: var(--dsw-alias-bg-base);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
@@ -211,7 +211,7 @@
   padding: 4px 10px;
   font-size: 11px;
   font-weight: 600;
-  color: var(--aion-text-tertiary, #86909c);
+  color: var(--dsw-alias-label-tertiary);
   user-select: none;
 }
 
@@ -231,7 +231,7 @@
   border: none;
   border-radius: 5px;
   background: transparent;
-  color: var(--aion-text-primary, #1f2329);
+  color: var(--dsw-alias-label-primary);
   font-size: 12px;
   cursor: pointer;
   text-align: left;
@@ -241,7 +241,7 @@
 }
 
 .reopenItemBtn:hover {
-  background: var(--aion-bg-2, #f2f3f5);
+  background: var(--dsw-alias-bg-layer-2);
 }
 
 .reopenItemKill {
@@ -254,14 +254,14 @@
   border: none;
   border-radius: 4px;
   background: transparent;
-  color: var(--aion-text-tertiary, #86909c);
+  color: var(--dsw-alias-label-tertiary);
   font-size: 13px;
   cursor: pointer;
 }
 
 .reopenItemKill:hover {
-  background: var(--aion-bg-3, #e5e6eb);
-  color: var(--aion-text-primary, #000000);
+  background: var(--dsw-alias-bg-layer-3);
+  color: var(--dsw-alias-label-primary);
 }
 
 .addToChatBtn {
@@ -272,10 +272,10 @@
   gap: 4px;
   height: 28px;
   padding: 0 10px;
-  border: 1px solid var(--aion-border-base, #e5e6eb);
+  border: 1px solid var(--dsw-alias-border-l2);
   border-radius: 14px;
-  background: var(--aion-bg-base, #ffffff);
-  color: var(--aion-text-primary, #1f2329);
+  background: var(--dsw-alias-bg-base);
+  color: var(--dsw-alias-label-primary);
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
@@ -284,7 +284,7 @@
 }
 
 .addToChatBtn:hover {
-  background: var(--aion-bg-2, #f2f3f5);
-  border-color: var(--aion-primary, #1677ff);
-  color: var(--aion-primary, #1677ff);
+  background: var(--dsw-alias-bg-layer-2);
+  border-color: var(--dsw-alias-state-business-primary);
+  color: var(--dsw-alias-state-business-primary);
 }

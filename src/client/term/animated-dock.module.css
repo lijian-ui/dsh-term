@@ -42,9 +42,9 @@
 
 /* Open-panel highlight: primary tint + thin ring to mirror the live state. */
 .item.active {
-  background: var(--aion-primary, #6ea0ff);
+  background: var(--dsw-alias-state-business-primary);
   color: #ffffff;
-  box-shadow: 0 0 0 1.5px var(--aion-primary, #6ea0ff);
+  box-shadow: 0 0 0 1.5px var(--dsw-alias-state-business-primary);
 }
 
 /* Hover tooltip — the small label that floats above each icon (21st.dev style). */
@@ -57,7 +57,7 @@
   font-size: 12px;
   line-height: 1.4;
   white-space: nowrap;
-  color: var(--aion-fg-1, #ffffff);
+  color: var(--dsw-alias-label-primary);
   background: rgba(20, 20, 30, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 6px;

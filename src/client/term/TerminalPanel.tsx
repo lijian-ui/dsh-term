@@ -108,17 +108,17 @@ function themeOf(): Record<string, string> {
   const dark = document.body.dataset.dsDarkTheme !== undefined
   if (dark) {
     return {
-      background: '#0e0e0e',
-      foreground: '#ced3da',
-      cursor: '#ced3da',
+      background: 'var(--dsw-alias-bg-base)',
+      foreground: 'var(--dsw-alias-label-secondary)',
+      cursor: 'var(--dsw-alias-label-secondary)',
       selectionBackground: 'rgba(255,255,255,0.2)',
       ...DARK_PALETTE,
     }
   }
   return {
-    background: '#ffffff',
-    foreground: '#1f2329',
-    cursor: '#1f2329',
+    background: 'var(--dsw-alias-bg-base)',
+    foreground: 'var(--dsw-alias-label-primary)',
+    cursor: 'var(--dsw-alias-label-primary)',
     selectionBackground: 'rgba(22,93,255,0.25)',
     ...LIGHT_PALETTE,
   }
