@@ -23,10 +23,10 @@ import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client';
 declare module '@deepseek-ai/dsh-client-ui-slots' {
     interface LocaleNamespaceMap {
         /** Terminal panel copy. */
-        'dsh-term': 'ui.panel.title' | 'ui.panel.addTabTitle' | 'ui.panel.collapseTitle' | 'ui.panel.emptyHint' | 'ui.tab.closeAria' | 'msg.sessionExited' | 'msg.spawnFailed' | 'ui.dock.label';
+        'dsh-term': 'ui.panel.title' | 'ui.panel.addTabTitle' | 'ui.panel.collapseTitle' | 'ui.panel.emptyHint' | 'ui.tab.closeAria' | 'msg.sessionExited' | 'msg.spawnFailed' | 'ui.dock.label' | 'ui.panel.shellTitle' | 'ui.shell.bash' | 'ui.shell.zsh' | 'ui.shell.powershell' | 'ui.shell.cmd' | 'ui.shell.gitbash' | 'ui.panel.reopenTitle' | 'ui.panel.backgroundSessions' | 'ui.panel.noBackground' | 'ui.panel.addToChat';
     }
 }
-/** Required services: sessions (for the workspace cwd). */
+/** Required services: sessions (for the workspace cwd), conversation (for add-to-chat). */
 export declare const inject: string[];
 /** Apply the browser half. */
 export declare function apply(ctx: ClientContext): void;

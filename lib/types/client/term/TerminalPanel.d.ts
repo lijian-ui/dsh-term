@@ -8,8 +8,9 @@
  * the web shell's frame, beside the file-manager panels (preview/explorer)
  * when present. The panel itself only owns its inner content (header + stage).
  *
- * A-version scope: pure user terminal. No agent integration, no SSH targets
- * yet — those are the B-version.
+ * Features: shell selector with availability detection, terminal reuse
+ * (close detaches — PTY keeps running; reopen re-attaches), 16-color ANSI
+ * palette, safe cwd fallback, selection → add to conversation.
  * @module dsh-term/client/term/TerminalPanel
  */
 import type { JSX } from 'react';
@@ -23,7 +24,7 @@ interface PanelProps {
     onClose: () => void;
     t: TranslateNS<'dsh-term'>;
 }
-/** The docked panel: header (title / tabs / new / collapse) + xterm stage. */
+/** The docked panel: header (title / shell / tabs / new / reopen / collapse) + xterm stage. */
 export declare function TerminalPanel({ ctx, api, onClose, t, }: PanelProps): JSX.Element;
 export {};
 //# sourceMappingURL=TerminalPanel.d.ts.map

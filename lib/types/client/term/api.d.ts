@@ -4,7 +4,7 @@
  * panel owns all session state.
  * @module dsh-term/client/term/api
  */
-import type { TermEvent, TermSessionInfo, TermSpawnRequest } from '../../core/types.ts';
+import type { ShellInfo, TermEvent, TermSessionInfo, TermSpawnRequest } from '../../core/types.ts';
 /** The stateless client bridge. */
 export declare class TermApi {
     /** Open a session; returns the wire info. */
@@ -17,9 +17,19 @@ export declare class TermApi {
     resize(id: string, cols: number, rows: number): Promise<{
         ok: boolean;
     }>;
-    /** Close one session. */
+    /** Close one session (kill the PTY). */
     close(id: string): Promise<{
         ok: boolean;
+    }>;
+    /** Detach a session (keep the PTY alive, mark as detached). */
+    detach(id: string): Promise<{
+        ok: boolean;
+    }>;
+    /** Reattach to a detached session; returns the wire info. */
+    reattach(id: string): Promise<TermSessionInfo>;
+    /** List available shells on the host. */
+    shells(): Promise<{
+        shells: readonly ShellInfo[];
     }>;
     /** Current session listing (used on reconnect). */
     list(): Promise<{

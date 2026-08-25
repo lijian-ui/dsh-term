@@ -19,7 +19,7 @@ export function appendToConversationDraft(ctx: ClientContext, text: string): boo
   if (sessionId === undefined) return false
   const actx = ctx.sessions.scope(sessionId)
   if (actx === undefined) return false
-  const conversation = (ctx as unknown as { conversation?: { input: { for(c: unknown): { state: { getSnapshot(): { draft: string } }; setDraft(s: string): void } } } }).conversation
+  const conversation = (ctx as unknown as { get(name: string): unknown }).get('conversation') as { input: { for(c: unknown): { state: { getSnapshot(): { draft: string } }; setDraft(s: string): void } } } | undefined
   if (conversation === undefined) return false
   const input = conversation.input.for(actx as unknown as ClientContext)
   const draft = input.state.getSnapshot().draft

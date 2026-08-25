@@ -6,6 +6,12 @@
  */
 
 .col {
+  /* Positioned anchor: the floating “添加到对话” button is absolutely
+     positioned with panel-relative coordinates (TerminalPanel onMouseUp),
+     so this element must be its offset parent — without it the button
+     resolves against whatever outer ancestor happens to be positioned
+     (the app frame / shell chrome) and lands near the far-left dock. */
+  position: relative;
   width: 100%;
   height: 100%;
   display: flex;
@@ -13,7 +19,7 @@
   border-left: 1px solid var(--dsw-alias-border-l2);
   background: var(--dsw-alias-bg-layer-1);
   overflow: hidden;
-  font-family: var(--aion-font-sans, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif);
+  font-family: var(--dsw-font-family);
 }
 
 .title {
@@ -279,7 +285,7 @@
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--dsw-shadow-lv1);
   white-space: nowrap;
 }
 

@@ -64,7 +64,7 @@ export const XTERM_CSS: string = `
 
 .xterm .xterm-viewport {
     /* On OS X this is required in order for the scroll bar to appear fully opaque */
-    background-color: #000;
+    background-color: var(--dsw-alias-bg-base);
     overflow-y: scroll;
     cursor: default;
     position: absolute;

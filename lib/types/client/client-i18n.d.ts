@@ -14,6 +14,16 @@ export declare const zh: {
     'ui.tab.closeAria': string;
     'msg.sessionExited': string;
     'msg.spawnFailed': string;
+    'ui.panel.shellTitle': string;
+    'ui.shell.bash': string;
+    'ui.shell.zsh': string;
+    'ui.shell.powershell': string;
+    'ui.shell.cmd': string;
+    'ui.shell.gitbash': string;
+    'ui.panel.reopenTitle': string;
+    'ui.panel.backgroundSessions': string;
+    'ui.panel.noBackground': string;
+    'ui.panel.addToChat': string;
     'ui.dock.label': string;
 };
 export declare const en: {
@@ -24,6 +34,16 @@ export declare const en: {
     'ui.tab.closeAria': string;
     'msg.sessionExited': string;
     'msg.spawnFailed': string;
+    'ui.panel.shellTitle': string;
+    'ui.shell.bash': string;
+    'ui.shell.zsh': string;
+    'ui.shell.powershell': string;
+    'ui.shell.cmd': string;
+    'ui.shell.gitbash': string;
+    'ui.panel.reopenTitle': string;
+    'ui.panel.backgroundSessions': string;
+    'ui.panel.noBackground': string;
+    'ui.panel.addToChat': string;
     'ui.dock.label': string;
 };
 //# sourceMappingURL=client-i18n.d.ts.map

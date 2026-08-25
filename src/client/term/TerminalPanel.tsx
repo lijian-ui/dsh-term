@@ -103,22 +103,30 @@ function adoptXtermStyles(): void {
   document.head.appendChild(tag)
 }
 
+/** Resolve a CSS custom property to its computed value (xterm canvas needs real colors, not var()). */
+function resolveVar(name: string): string {
+  return getComputedStyle(document.body).getPropertyValue(name).trim()
+}
+
 /** Terminal theme matching the shell's light/dark marker. */
 function themeOf(): Record<string, string> {
   const dark = document.body.dataset.dsDarkTheme !== undefined
+  const bg = resolveVar('--dsw-alias-bg-base')
   if (dark) {
+    const fg = resolveVar('--dsw-alias-label-secondary')
     return {
-      background: 'var(--dsw-alias-bg-base)',
-      foreground: 'var(--dsw-alias-label-secondary)',
-      cursor: 'var(--dsw-alias-label-secondary)',
+      background: bg,
+      foreground: fg,
+      cursor: fg,
       selectionBackground: 'rgba(255,255,255,0.2)',
       ...DARK_PALETTE,
     }
   }
+  const fg = resolveVar('--dsw-alias-label-primary')
   return {
-    background: 'var(--dsw-alias-bg-base)',
-    foreground: 'var(--dsw-alias-label-primary)',
-    cursor: 'var(--dsw-alias-label-primary)',
+    background: bg,
+    foreground: fg,
+    cursor: fg,
     selectionBackground: 'rgba(22,93,255,0.25)',
     ...LIGHT_PALETTE,
   }

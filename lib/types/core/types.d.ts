@@ -3,6 +3,14 @@
  * Pure data — no runtime imports (keeps the client bundle purity gate happy).
  * @module dsh-term/core/types
  */
+/** Shell kinds the user can pick from in the panel dropdown. */
+export type ShellType = 'bash' | 'zsh' | 'powershell' | 'cmd' | 'gitbash';
+/** One shell option surfaced to the browser (id + display label key). */
+export interface ShellInfo {
+    readonly id: ShellType;
+    /** i18n key suffix, e.g. 'bash' → t('ui.shell.bash'). */
+    readonly labelKey: string;
+}
 /** One live PTY session as the browser knows it. */
 export interface TermSessionInfo {
     /** Stable session id (the wire handle). */
@@ -18,20 +26,26 @@ export interface TermSessionInfo {
     readonly alive: boolean;
     /** POSIX exit code when the session ended (null while alive). */
     readonly exitCode: number | null;
+    /** Shell kind this session was spawned with. */
+    readonly shell: ShellType;
+    /** Whether the session is detached (tab closed but PTY still running). */
+    readonly detached: boolean;
 }
 /** Request: open a new PTY session. */
 export interface TermSpawnRequest {
     /** Optional session display name. */
     name?: string;
-    /** Working directory (defaults to the session's workspace cwd). */
+    /** Working directory (defaults to the session's workspace cwd, fallback homedir). */
     cwd?: string;
-    /** Shell executable (defaults to the platform shell). */
-    shell?: string;
+    /** Shell kind (defaults to the platform default). */
+    shell?: ShellType;
     /** Shell arguments (defaults to an interactive login-less profile). */
     args?: string[];
     /** Initial terminal size. */
     cols?: number;
     rows?: number;
+    /** Extra environment variables merged into the PTY env. */
+    env?: Record<string, string>;
 }
 /** Request: deliver terminal input. */
 export interface TermWriteRequest {
@@ -71,6 +85,12 @@ export type TermEvent = {
 } | {
     readonly kind: 'closed';
     readonly id: string;
+} | {
+    readonly kind: 'detached';
+    readonly id: string;
+} | {
+    readonly kind: 'reattached';
+    readonly session: TermSessionInfo;
 };
 /** The workspace-gated session id (host-minted; the wire carries only this). */
 export type TermSessionId = string;
